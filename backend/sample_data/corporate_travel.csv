@@ -1,0 +1,19 @@
+Booking Ref,Traveler,Travel Date,Category,Origin,Destination,Distance,Distance Unit,Nights,Cost,Currency
+BK-20250101,Maria Schmidt,2025-01-10,Air,FRA,LHR,,km,,342.50,EUR
+BK-20250102,Maria Schmidt,2025-01-10,Hotel,London,London,,nights,2,480.00,GBP
+BK-20250103,Maria Schmidt,2025-01-12,Air,LHR,FRA,,km,,298.00,EUR
+BK-20250104,Hans Weber,2025-01-15,Air,FRA,JFK,,km,,1850.00,EUR
+BK-20250105,Hans Weber,2025-01-15,Taxi,JFK,Manhattan,45,km,,78.00,USD
+BK-20250106,Hans Weber,2025-01-15,Hotel,New York,New York,,nights,4,1520.00,USD
+BK-20250107,Hans Weber,2025-01-19,Air,JFK,FRA,,km,,1720.00,EUR
+BK-20250108,Li Chen,2025-01-22,Air,SIN,LHR,,km,,2100.00,SGD
+BK-20250109,Li Chen,2025-01-22,Hotel,London,London,,nights,5,1200.00,GBP
+BK-20250110,Li Chen,2025-01-27,Air,LHR,SIN,,km,,1950.00,SGD
+BK-20250111,Anna Müller,2025-02-03,Rail,Frankfurt,Munich,305,km,,89.00,EUR
+BK-20250112,Anna Müller,2025-02-03,Hotel,Munich,Munich,,nights,1,165.00,EUR
+BK-20250113,James Park,2025-02-10,Air,JFK,LAX,,miles,,520.00,USD
+BK-20250114,James Park,2025-02-10,Car Rental,Los Angeles,Los Angeles,380,miles,,245.00,USD
+BK-20250115,James Park,2025-02-13,Air,LAX,JFK,,miles,,485.00,USD
+BK-20250116,Priya Patel,2025-02-18,Air,DEL,BOM,,km,,185.00,INR
+BK-20250117,Priya Patel,2025-02-18,Hotel,Mumbai,Mumbai,,nights,3,450.00,INR
+BK-20250118,Priya Patel,2025-02-21,Air,BOM,DEL,,km,,195.00,INR
