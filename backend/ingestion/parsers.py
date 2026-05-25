@@ -14,11 +14,11 @@ from .models import DataSource, EmissionRecord, AuditLog
 # --- Emission factors (kg CO2e per unit) ---
 # Simplified but realistic factors from DEFRA/EPA
 EMISSION_FACTORS = {
-    'diesel_litre': Decimal('2.68'),       # kg CO2e/litre diesel
-    'petrol_litre': Decimal('2.31'),       # kg CO2e/litre petrol
-    'natural_gas_m3': Decimal('2.02'),     # kg CO2e/m³ natural gas
-    'heating_oil_litre': Decimal('2.54'),  # kg CO2e/litre heating oil
-    'electricity_kwh': Decimal('0.42'),    # kg CO2e/kWh (grid average, varies by region)
+    'diesel_litres': Decimal('2.68'),
+    'petrol_litres': Decimal('2.31'),
+    'natural_gas_m3': Decimal('2.02'),
+    'heating_oil_litres': Decimal('2.54'),
+    'electricity_kwh': Decimal('0.42'),
     'flight_km': Decimal('0.255'),         # kg CO2e/passenger-km (average)
     'flight_short_km': Decimal('0.156'),   # short-haul <500km
     'flight_medium_km': Decimal('0.131'),  # 500-3700km
