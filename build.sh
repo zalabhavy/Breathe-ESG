@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "=== Installing Python dependencies ==="
+pip install -r requirements.txt
+
 echo "=== Building frontend ==="
 cd frontend
 npm install
@@ -16,6 +19,7 @@ echo "=== Collecting Django static files ==="
 cd backend
 python manage.py collectstatic --noinput
 python manage.py migrate
+echo "=== Seeding demo data ==="
 python manage.py seed_demo
 
 echo "=== Build complete ==="
