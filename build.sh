@@ -16,5 +16,6 @@ echo "=== Collecting Django static files ==="
 cd backend
 python manage.py collectstatic --noinput
 python manage.py migrate
+python manage.py seed_demo
 
 echo "=== Build complete ==="
