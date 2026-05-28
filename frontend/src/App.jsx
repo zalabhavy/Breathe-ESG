@@ -10,6 +10,7 @@ export default function App() {
   const [tenants, setTenants] = useState([]);
   const [activeTenant, setActiveTenant] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [apiError, setApiError] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -18,7 +19,11 @@ export default function App() {
       const list = Array.isArray(raw) ? raw : Array.isArray(raw?.results) ? raw.results : [];
       setTenants(list);
       if (list.length > 0) setActiveTenant(list[0].id);
-    }).catch(() => setTenants([]));
+      if (list.length === 0) setApiError('No tenants found. Run seed_demo on the backend.');
+    }).catch((err) => {
+      setTenants([]);
+      setApiError('API error: ' + (err.message || 'Cannot reach backend'));
+    });
   }, []);
 
   // Close menu on route change
@@ -66,6 +71,7 @@ export default function App() {
           </button>
           <span className="mobile-brand">🌿 Breathe ESG</span>
         </div>
+        {apiError && <div className="alert alert-error">{apiError}</div>}
         <Routes>
           <Route path="/" element={<Dashboard tenant={activeTenant} />} />
           <Route path="/upload" element={<Upload tenant={activeTenant} />} />
