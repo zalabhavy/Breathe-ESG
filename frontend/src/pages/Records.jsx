@@ -38,8 +38,9 @@ export default function Records({ tenant }) {
     getRecords(params)
       .then(function(res) {
         var data = res.data;
-        setRecords(data.results || data);
-        setTotalCount(data.count || 0);
+        var list = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
+        setRecords(list);
+        setTotalCount(data.count || list.length || 0);
       })
       .finally(function() { setLoading(false); });
   }, [tenant, page, scopeFilter, statusFilter, categoryFilter]);
@@ -63,7 +64,7 @@ export default function Records({ tenant }) {
     if (expandedId === id) { setExpandedId(null); return; }
     setExpandedId(id);
     getAuditLogs({ record: id })
-      .then(function(res) { setAuditLogs(res.data.results || res.data); })
+      .then(function(res) { var d = res.data; setAuditLogs(Array.isArray(d) ? d : Array.isArray(d?.results) ? d.results : []); })
       .catch(function() { setAuditLogs([]); });
   }
 

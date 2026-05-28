@@ -20,6 +20,8 @@ export default function Dashboard({ tenant }) {
   if (!data) return <div>No data</div>;
 
   const statusMap = data.by_status || {};
+  const byScope = Array.isArray(data.by_scope) ? data.by_scope : [];
+  const byCategory = Array.isArray(data.by_category) ? data.by_category : [];
   const formatCO2 = (val) => {
     if (!val) return '0';
     const n = parseFloat(val);
@@ -65,7 +67,7 @@ export default function Dashboard({ tenant }) {
               </tr>
             </thead>
             <tbody>
-              {(data.by_scope || []).map((s) => (
+              {byScope.map((s) => (
                 <tr key={s.scope}>
                   <td><span className={`badge badge-scope${s.scope}`}>{SCOPE_LABELS[s.scope]}</span></td>
                   <td>{s.count}</td>
@@ -89,7 +91,7 @@ export default function Dashboard({ tenant }) {
               </tr>
             </thead>
             <tbody>
-              {(data.by_category || []).map((c) => (
+              {byCategory.map((c) => (
                 <tr key={c.category}>
                   <td>{c.category.replace(/_/g, ' ')}</td>
                   <td>{c.count}</td>

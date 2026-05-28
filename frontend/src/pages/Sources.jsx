@@ -17,7 +17,7 @@ export default function Sources({ tenant }) {
     if (!tenant) return;
     setLoading(true);
     getSources({ tenant: tenant })
-      .then(function(res) { setSources(res.data.results || res.data); })
+      .then(function(res) { var d = res.data; setSources(Array.isArray(d) ? d : Array.isArray(d?.results) ? d.results : []); })
       .finally(function() { setLoading(false); });
   }, [tenant]);
 

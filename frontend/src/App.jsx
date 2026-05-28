@@ -14,10 +14,11 @@ export default function App() {
 
   useEffect(() => {
     getTenants().then((res) => {
-      const list = res.data.results || res.data;
+      const raw = res.data;
+      const list = Array.isArray(raw) ? raw : Array.isArray(raw?.results) ? raw.results : [];
       setTenants(list);
       if (list.length > 0) setActiveTenant(list[0].id);
-    });
+    }).catch(() => setTenants([]));
   }, []);
 
   // Close menu on route change
