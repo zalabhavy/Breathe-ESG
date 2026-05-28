@@ -27,7 +27,9 @@ export default function Sources({ tenant }) {
     React.createElement('h1', null, 'Data Sources'),
     loading
       ? React.createElement('div', null, 'Loading...')
-      : React.createElement('div', { className: 'table-wrapper' },
+      : React.createElement(React.Fragment, null,
+          // Desktop table
+          React.createElement('div', { className: 'table-wrapper desktop-table' },
           React.createElement('table', null,
             React.createElement('thead', null,
               React.createElement('tr', null,
@@ -63,6 +65,42 @@ export default function Sources({ tenant }) {
                 }, 'No data sources yet. Upload a file to get started.')
               )
             )
+          )
+        ),
+
+          // Mobile card view
+          React.createElement('div', { className: 'mobile-cards' },
+            sources.length === 0
+              ? React.createElement('div', { className: 'card', style: { textAlign: 'center', color: 'var(--text-muted)' } },
+                  'No data sources yet. Upload a file to get started.')
+              : sources.map(function(s) {
+                  return React.createElement('div', { key: s.id, className: 'source-card' },
+                    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' } },
+                      React.createElement('strong', { style: { fontSize: '0.85rem', wordBreak: 'break-all' } }, s.file_name),
+                      React.createElement('span', {
+                        className: 'badge badge-' + (s.status === 'processed' ? 'approved' : 'pending')
+                      }, s.status)
+                    ),
+                    React.createElement('div', { className: 'record-card-body' },
+                      React.createElement('div', null,
+                        React.createElement('div', { className: 'card-label' }, 'Type'),
+                        React.createElement('div', null, TYPE_LABELS[s.source_type] || s.source_type)
+                      ),
+                      React.createElement('div', null,
+                        React.createElement('div', { className: 'card-label' }, 'Records'),
+                        React.createElement('div', null, s.row_count)
+                      ),
+                      React.createElement('div', null,
+                        React.createElement('div', { className: 'card-label' }, 'Errors'),
+                        React.createElement('div', { style: { color: s.error_count > 0 ? 'var(--danger)' : undefined } }, s.error_count)
+                      ),
+                      React.createElement('div', null,
+                        React.createElement('div', { className: 'card-label' }, 'Uploaded'),
+                        React.createElement('div', null, new Date(s.uploaded_at).toLocaleString())
+                      )
+                    )
+                  );
+                })
           )
         )
   );

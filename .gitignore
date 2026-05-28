@@ -3,10 +3,11 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
-db.sqlite3
 *.sqlite3
 backend/media/
 backend/staticfiles/
+*.egg-info/
+.eggs/
 
 # Node
 frontend/node_modules/
@@ -25,3 +26,4 @@ Thumbs.db
 # Environment
 .env
 *.env.local
+.env.*

@@ -3,6 +3,17 @@ import { getRecords, bulkReview, getAuditLogs } from '../api';
 
 const SCOPE_LABELS = { 1: 'Scope 1', 2: 'Scope 2', 3: 'Scope 3' };
 
+function formatActivityDate(value) {
+  if (!value) return '-';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  });
+}
+
 export default function Records({ tenant }) {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -142,7 +153,9 @@ export default function Records({ tenant }) {
 
     loading
       ? React.createElement('div', null, 'Loading...')
-      : React.createElement('div', { className: 'table-wrapper' },
+      : React.createElement(React.Fragment, null,
+          // Desktop table
+          React.createElement('div', { className: 'table-wrapper desktop-table' },
           React.createElement('table', null,
             React.createElement('thead', null,
               React.createElement('tr', null,
@@ -179,9 +192,9 @@ export default function Records({ tenant }) {
                             onChange: function() { toggleSelect(r.id); }
                           })
                     ),
-                    React.createElement('td', null, r.activity_date),
+                    React.createElement('td', { className: 'cell-date' }, formatActivityDate(r.activity_date)),
                     React.createElement('td', null,
-                      React.createElement('span', { className: 'badge badge-scope' + r.scope },
+                      React.createElement('span', { className: 'badge badge-scope' + r.scope + ' scope-pill' },
                         SCOPE_LABELS[r.scope])
                     ),
                     React.createElement('td', { style: { fontSize: '0.8rem' } },
@@ -220,7 +233,8 @@ export default function Records({ tenant }) {
                         style: { background: '#f8fafc', padding: '1rem' }
                       },
                         React.createElement('div', {
-                          style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }
+                          className: 'detail-grid',
+                          style: { gap: '1rem' }
                         },
                           React.createElement('div', null,
                             React.createElement('h4', {
@@ -311,6 +325,112 @@ export default function Records({ tenant }) {
                 return rows;
               }).flat()
             )
+          )
+        ),
+
+          // Mobile card view
+          React.createElement('div', { className: 'mobile-cards' },
+            records.map(function(r) {
+              var isExpanded = expandedId === r.id;
+              return React.createElement('div', { key: r.id, className: 'record-card' },
+                React.createElement('div', { className: 'record-card-header' },
+                  React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '0.5rem' } },
+                    r.is_locked
+                      ? React.createElement('span', { title: 'Locked' }, '\uD83D\uDD12')
+                      : React.createElement('input', {
+                          type: 'checkbox',
+                          checked: selected.has(r.id),
+                          onChange: function() { toggleSelect(r.id); }
+                        }),
+                    React.createElement('span', { className: 'badge badge-scope' + r.scope + ' scope-pill' },
+                      SCOPE_LABELS[r.scope]),
+                    React.createElement('span', { className: 'badge badge-' + r.review_status }, r.review_status)
+                  ),
+                  React.createElement('span', { className: 'cell-date', style: { fontSize: '0.78rem', color: 'var(--text-muted)' } },
+                    formatActivityDate(r.activity_date))
+                ),
+                React.createElement('div', { className: 'record-card-body' },
+                  React.createElement('div', null,
+                    React.createElement('div', { className: 'card-label' }, 'Category'),
+                    React.createElement('div', null, (r.category || '').replace(/_/g, ' '))
+                  ),
+                  React.createElement('div', null,
+                    React.createElement('div', { className: 'card-label' }, 'Quantity'),
+                    React.createElement('div', null, parseFloat(r.quantity).toLocaleString() + ' ' + r.unit)
+                  ),
+                  React.createElement('div', null,
+                    React.createElement('div', { className: 'card-label' }, 'CO₂e'),
+                    React.createElement('div', null, r.co2e_kg ? parseFloat(r.co2e_kg).toFixed(1) + ' kg' : '-')
+                  ),
+                  React.createElement('div', null,
+                    React.createElement('div', { className: 'card-label' }, 'Facility'),
+                    React.createElement('div', null, r.facility || '-')
+                  )
+                ),
+                (r.flags || []).length > 0 && React.createElement('div', { className: 'record-card-flags' },
+                  r.flags.map(function(f, i) {
+                    return React.createElement('span', { key: i, className: 'flag-chip' }, f);
+                  })
+                ),
+                React.createElement('div', { className: 'record-card-footer' },
+                  React.createElement('span', { style: { fontSize: '0.75rem', color: 'var(--text-muted)' } }, r.source_type),
+                  React.createElement('button', {
+                    className: 'btn btn-outline btn-sm',
+                    onClick: function() { toggleExpand(r.id); }
+                  }, isExpanded ? 'Hide' : 'Details')
+                ),
+                isExpanded && React.createElement('div', { className: 'record-card-detail' },
+                  React.createElement('h4', null, 'Record Details'),
+                  React.createElement('table', null,
+                    React.createElement('tbody', null,
+                      React.createElement('tr', null,
+                        React.createElement('td', null, React.createElement('strong', null, 'Raw Qty:')),
+                        React.createElement('td', null, r.raw_quantity + ' ' + r.raw_unit)
+                      ),
+                      React.createElement('tr', null,
+                        React.createElement('td', null, React.createElement('strong', null, 'EF:')),
+                        React.createElement('td', null, r.emission_factor + ' kg CO₂e/' + r.unit)
+                      ),
+                      React.createElement('tr', null,
+                        React.createElement('td', null, React.createElement('strong', null, 'Period:')),
+                        React.createElement('td', null, (r.period_start || '-') + ' to ' + (r.period_end || '-'))
+                      ),
+                      React.createElement('tr', null,
+                        React.createElement('td', null, React.createElement('strong', null, 'File:')),
+                        React.createElement('td', null, r.source_file)
+                      ),
+                      React.createElement('tr', null,
+                        React.createElement('td', null, React.createElement('strong', null, 'Desc:')),
+                        React.createElement('td', null, r.description)
+                      )
+                    )
+                  ),
+                  r.raw_data && Object.keys(r.raw_data).length > 0 &&
+                    React.createElement('details', { style: { marginTop: '0.5rem', fontSize: '0.75rem' } },
+                      React.createElement('summary', null, 'Raw source data'),
+                      React.createElement('pre', {
+                        style: { background: '#f1f5f9', padding: '0.5rem', borderRadius: '4px', overflow: 'auto', marginTop: '0.25rem', fontSize: '0.7rem' }
+                      }, JSON.stringify(r.raw_data, null, 2))
+                    ),
+                  React.createElement('h4', { style: { marginTop: '0.75rem' } }, 'Audit Trail'),
+                  auditLogs.length === 0
+                    ? React.createElement('div', { style: { color: 'var(--text-muted)', fontSize: '0.8rem' } }, 'No audit entries')
+                    : React.createElement('div', { style: { fontSize: '0.8rem' } },
+                        auditLogs.map(function(log) {
+                          return React.createElement('div', {
+                            key: log.id,
+                            style: { marginBottom: '0.4rem', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border)' }
+                          },
+                            React.createElement('span', { className: 'badge badge-' + log.action }, log.action),
+                            ' ',
+                            React.createElement('span', { style: { color: 'var(--text-muted)' } },
+                              new Date(log.performed_at).toLocaleString())
+                          );
+                        })
+                      )
+                )
+              );
+            })
           )
         ),
 

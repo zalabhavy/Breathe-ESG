@@ -48,58 +48,74 @@ export default function Upload({ tenant }) {
   const sourceInfo = SOURCE_TYPES.find((s) => s.value === sourceType);
 
   return (
-    <div>
+    <div className="upload-page">
       <h1>Upload Data</h1>
 
-      <div className="card" style={{ maxWidth: '600px' }}>
-        <div className="form-group">
-          <label>Source Type</label>
-          <select value={sourceType} onChange={(e) => setSourceType(e.target.value)}>
-            {SOURCE_TYPES.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
-            ))}
-          </select>
+      <div className="upload-grid">
+        <div className="card upload-card">
+          <div className="form-group">
+            <label>Source Type</label>
+            <select value={sourceType} onChange={(e) => setSourceType(e.target.value)}>
+              {SOURCE_TYPES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div
+            className={`upload-zone ${dragover ? 'dragover' : ''}`}
+            onDragOver={(e) => { e.preventDefault(); setDragover(true); }}
+            onDragLeave={() => setDragover(false)}
+            onDrop={handleDrop}
+            onClick={() => document.getElementById('fileInput').click()}
+          >
+            {file ? (
+              <div>
+                <strong>{file.name}</strong>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                  {(file.size / 1024).toFixed(1)} KB
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📁</div>
+                <div>Drop a file here or click to browse</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                  Accepts: {sourceInfo?.accept}
+                </div>
+              </div>
+            )}
+          </div>
+          <input
+            id="fileInput"
+            type="file"
+            accept={sourceInfo?.accept}
+            style={{ display: 'none' }}
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+
+          <button
+            className="btn btn-primary"
+            onClick={handleUpload}
+            disabled={!file || uploading}
+          >
+            {uploading ? 'Processing...' : 'Upload & Process'}
+          </button>
         </div>
 
-        <div
-          className={`upload-zone ${dragover ? 'dragover' : ''}`}
-          onDragOver={(e) => { e.preventDefault(); setDragover(true); }}
-          onDragLeave={() => setDragover(false)}
-          onDrop={handleDrop}
-          onClick={() => document.getElementById('fileInput').click()}
-        >
-          {file ? (
-            <div>
-              <strong>{file.name}</strong>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                {(file.size / 1024).toFixed(1)} KB
-              </div>
-            </div>
-          ) : (
-            <div>
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📁</div>
-              <div>Drop a file here or click to browse</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                Accepts: {sourceInfo?.accept}
-              </div>
-            </div>
-          )}
+        <div className="card upload-card">
+          <h3 style={{ marginBottom: '0.5rem' }}>Expected File Formats</h3>
+          <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+            <p><strong>SAP Fuel & Procurement:</strong> Semicolon-delimited flat file export from SAP MM (SE16/LSMW).
+              Supports German (Werk, Menge, Mengeneinheit) and English column headers.
+              Dates in DD.MM.YYYY or YYYYMMDD format.</p>
+            <p style={{ marginTop: '0.5rem' }}><strong>Utility Electricity:</strong> CSV from utility portal with columns:
+              Account Number, Meter ID, Read Date, Period Start, Period End, Consumption, Unit.</p>
+            <p style={{ marginTop: '0.5rem' }}><strong>Corporate Travel:</strong> CSV export from Concur/Navan with:
+              Booking Ref, Traveler, Travel Date, Category (Air/Hotel/Car/Rail),
+              Origin, Destination, Distance.</p>
+          </div>
         </div>
-        <input
-          id="fileInput"
-          type="file"
-          accept={sourceInfo?.accept}
-          style={{ display: 'none' }}
-          onChange={(e) => setFile(e.target.files[0])}
-        />
-
-        <button
-          className="btn btn-primary"
-          onClick={handleUpload}
-          disabled={!file || uploading}
-        >
-          {uploading ? 'Processing...' : 'Upload & Process'}
-        </button>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
@@ -112,20 +128,6 @@ export default function Upload({ tenant }) {
           )}
         </div>
       )}
-
-      <div className="card" style={{ maxWidth: '600px' }}>
-        <h3 style={{ marginBottom: '0.5rem' }}>Expected File Formats</h3>
-        <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
-          <p><strong>SAP Fuel & Procurement:</strong> Semicolon-delimited flat file export from SAP MM (SE16/LSMW).
-            Supports German (Werk, Menge, Mengeneinheit) and English column headers.
-            Dates in DD.MM.YYYY or YYYYMMDD format.</p>
-          <p style={{ marginTop: '0.5rem' }}><strong>Utility Electricity:</strong> CSV from utility portal with columns:
-            Account Number, Meter ID, Read Date, Period Start, Period End, Consumption, Unit.</p>
-          <p style={{ marginTop: '0.5rem' }}><strong>Corporate Travel:</strong> CSV export from Concur/Navan with:
-            Booking Ref, Traveler, Travel Date, Category (Air/Hotel/Car/Rail),
-            Origin, Destination, Distance.</p>
-        </div>
-      </div>
     </div>
   );
 }

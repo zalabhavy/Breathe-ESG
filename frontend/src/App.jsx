@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, NavLink } from 'react-router-dom';
+import { Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { getTenants } from './api';
 import Dashboard from './pages/Dashboard';
 import Upload from './pages/Upload';
@@ -9,6 +9,8 @@ import Sources from './pages/Sources';
 export default function App() {
   const [tenants, setTenants] = useState([]);
   const [activeTenant, setActiveTenant] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     getTenants().then((res) => {
@@ -18,11 +20,22 @@ export default function App() {
     });
   }, []);
 
+  // Close menu on route change
+  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
+
   return (
     <div className="app">
-      <aside className="sidebar">
-        <div className="brand">🌿 Breathe ESG</div>
-        <div className="subtitle">Emissions Ingestion Platform</div>
+      {/* Mobile overlay backdrop */}
+      {menuOpen && <div className="sidebar-overlay" onClick={() => setMenuOpen(false)} />}
+
+      <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <div>
+            <div className="brand">🌿 Breathe ESG</div>
+            <div className="subtitle">Emissions Ingestion Platform</div>
+          </div>
+          <button className="menu-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">✕</button>
+        </div>
         <nav>
           <NavLink to="/" end>📊 Dashboard</NavLink>
           <NavLink to="/upload">📤 Upload Data</NavLink>
@@ -44,7 +57,14 @@ export default function App() {
           </div>
         )}
       </aside>
+
       <main className="main">
+        <div className="mobile-header">
+          <button className="hamburger" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+            <span /><span /><span />
+          </button>
+          <span className="mobile-brand">🌿 Breathe ESG</span>
+        </div>
         <Routes>
           <Route path="/" element={<Dashboard tenant={activeTenant} />} />
           <Route path="/upload" element={<Upload tenant={activeTenant} />} />
