@@ -17,7 +17,7 @@ cp -r frontend/dist/* backend/staticfiles/frontend/
 
 echo "=== Collecting Django static files ==="
 cd backend
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear 2>/dev/null || python manage.py collectstatic --noinput
 python manage.py migrate
 echo "=== Seeding demo data ==="
 python manage.py seed_demo
